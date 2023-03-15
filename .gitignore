@@ -1,5 +1,4 @@
 # Visual Studio Code
-.vscode/
 
 # Logs
 logs
@@ -94,4 +93,3 @@ out
 bin
 obj
 appsettings.json
-local.settings.json

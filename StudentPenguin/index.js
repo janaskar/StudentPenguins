@@ -36,15 +36,37 @@ function action(req) {
 }
 
 function getInfo() {
-    const penguinName = 'Pingu';
+    const penguinName = 'Noni';
     const teamName = 'Bouvet';
 
     return { name: penguinName, team: teamName };
 }
 
 function getCommand() {
-    const response = moveTowardsCenterOfMap();
-    return { command: response };
+    if (this.body.suddenDeath > 20) {
+        const response = moveTowardsBonus();
+        return { command: response };
+    }
+    else {
+        const response = moveTowardsCenterOfMap();
+        return { command: response };
+    }
+}
+
+function moveTowardsBonus() {
+    let closestBonus = null;
+    let closestDistance = Infinity;
+
+    for (let bonus of this.body.bonusTiles) {
+        let distance = calculateDistance(bonus.x, bonus.y, this.body.you.x, this.body.you.y);
+
+        if (distance < closestDistance) {
+            closestDistance = distance;
+            closestBonus = bonus;
+        }
+    }
+
+    return moveTowardsPoint(closestBonus.x, closestBonus.y);
 }
 
 function moveTowardsCenterOfMap() {
@@ -52,6 +74,10 @@ function moveTowardsCenterOfMap() {
     const centerPointY = Math.floor(this.body.mapHeight / 2);
 
     return moveTowardsPoint(centerPointX, centerPointY);
+}
+
+function calculateDistance(x1, y1, x2, y2) {
+    return Math.abs(x1 - x2) + Math.abs(y1 - y2);
 }
 
 function moveTowardsPoint(pointX, pointY) {
@@ -79,6 +105,7 @@ function moveTowardsPoint(pointX, pointY) {
 
 function doesCellContainWall(x, y) {
     return this.body.walls.some((wall) => wall.x == x && wall.y == y);
+    
 }
 
 function wallInFrontOfPenguin() {
